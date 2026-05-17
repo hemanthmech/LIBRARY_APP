@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}My Books — LibraTrack{% endblock %}
+
+{% block content %}
+<h1 class="h2 mb-4">
+  <i class="bi bi-bookmark-check me-2 text-primary" aria-hidden="true"></i>My Books
+</h1>
+
+<section aria-labelledby="active-heading" class="mb-5">
+  <h2 class="h4" id="active-heading">Currently Borrowing</h2>
+  {% if active %}
+  <div class="table-responsive">
+    <table class="table table-hover" aria-label="Books you are currently borrowing">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Book</th>
+          <th scope="col">Borrowed On</th>
+          <th scope="col">Due Date</th>
+          <th scope="col">Status</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in active %}
+        <tr {% if record.is_overdue %}class="table-danger"{% endif %}>
+          <td><a href="{{ record.book.get_absolute_url }}">{{ record.book.title }}</a></td>
+          <td>{{ record.borrowed_on }}</td>
+          <td>{{ record.due_date }}</td>
+          <td>
+            {% if record.is_overdue %}
+              <span class="badge bg-danger">Overdue</span>
+            {% else %}
+              <span class="badge bg-success">On time</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'books:return_book' record.pk %}" class="btn btn-sm btn-outline-primary">
+              Return
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted">You are not currently borrowing any books.</p>
+  {% endif %}
+</section>
+
+<section aria-labelledby="history-heading">
+  <h2 class="h4" id="history-heading">Borrowing History</h2>
+  {% if history %}
+  <div class="table-responsive">
+    <table class="table table-sm" aria-label="Your borrowing history">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Book</th>
+          <th scope="col">Borrowed</th>
+          <th scope="col">Returned</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in history %}
+        <tr>
+          <td><a href="{{ record.book.get_absolute_url }}">{{ record.book.title }}</a></td>
+          <td>{{ record.borrowed_on }}</td>
+          <td>{{ record.returned_on }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-muted">No borrowing history yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

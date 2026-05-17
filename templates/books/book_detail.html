@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}{{ book.title }} — LibraTrack{% endblock %}
+
+{% block content %}
+<nav aria-label="Breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'books:book_list' %}">Books</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ book.title }}</li>
+  </ol>
+</nav>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <article>
+      <h1 class="h2 mb-1">{{ book.title }}</h1>
+      <p class="text-muted mb-3">
+        <i class="bi bi-person me-1" aria-hidden="true"></i>{{ book.author_names }}
+        &nbsp;·&nbsp;
+        <i class="bi bi-calendar me-1" aria-hidden="true"></i>{{ book.published_year }}
+      </p>
+
+      {% if book.categories.all %}
+      <div class="mb-3" aria-label="Categories">
+        {% for cat in book.categories.all %}
+        <a href="{% url 'books:category_detail' cat.pk %}"
+           class="badge bg-secondary text-decoration-none me-1 fs-6">{{ cat.name }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <p class="lead">{{ book.description|default:"No description available." }}</p>
+
+      <dl class="row mt-4">
+        <dt class="col-sm-3">ISBN</dt>
+        <dd class="col-sm-9">{{ book.isbn }}</dd>
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">
+          {% if book.is_available %}
+            <span class="badge bg-success">Available</span>
+          {% else %}
+            <span class="badge bg-warning text-dark">Borrowed</span>
+          {% endif %}
+        </dd>
+        {% if book.added_by %}
+        <dt class="col-sm-3">Added by</dt>
+        <dd class="col-sm-9">{{ book.added_by.username }}</dd>
+        {% endif %}
+      </dl>
+    </article>
+  </div>
+
+  <!-- Actions sidebar -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 card-title">Actions</h2>
+
+        {% if user.is_authenticated %}
+          {% if book.is_available %}
+            <a href="{% url 'books:borrow_book' book.pk %}" class="btn btn-success w-100 mb-2">
+              <i class="bi bi-bookmark-plus me-1" aria-hidden="true"></i>Borrow this Book
+            </a>
+          {% else %}
+            <button class="btn btn-secondary w-100 mb-2" disabled aria-disabled="true">
+              <i class="bi bi-bookmark-x me-1" aria-hidden="true"></i>Currently Unavailable
+            </button>
+            {% if active_borrow and active_borrow.borrower == user %}
+            <a href="{% url 'books:return_book' active_borrow.pk %}" class="btn btn-outline-primary w-100 mb-2">
+              <i class="bi bi-arrow-return-left me-1" aria-hidden="true"></i>Return this Book
+            </a>
+            {% endif %}
+          {% endif %}
+
+          <hr />
+          <a href="{% url 'books:book_edit' book.pk %}" class="btn btn-outline-secondary w-100 mb-2">
+            <i class="bi bi-pencil me-1" aria-hidden="true"></i>Edit
+          </a>
+          <a href="{% url 'books:book_delete' book.pk %}" class="btn btn-outline-danger w-100">
+            <i class="bi bi-trash me-1" aria-hidden="true"></i>Delete
+          </a>
+        {% else %}
+          <p class="text-muted small">
+            <a href="{% url 'login' %}">Log in</a> to borrow or manage books.
+          </p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if active_borrow %}
+    <div class="card shadow-sm mt-3 border-warning">
+      <div class="card-body">
+        <h2 class="h6 card-title text-warning">
+          <i class="bi bi-person-check me-1" aria-hidden="true"></i>Currently Borrowed By
+        </h2>
+        <p class="mb-1">{{ active_borrow.borrower.username }}</p>
+        <p class="text-muted small mb-0">Due: {{ active_borrow.due_date }}
+          {% if active_borrow.is_overdue %}
+          <span class="text-danger fw-bold">(Overdue)</span>
+          {% endif %}
+        </p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Borrow history -->
+{% if borrow_history %}
+<section class="mt-5" aria-labelledby="history-heading">
+  <h2 class="h4" id="history-heading">Borrow History</h2>
+  <div class="table-responsive">
+    <table class="table table-hover table-sm" aria-label="Borrow history for {{ book.title }}">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Borrower</th>
+          <th scope="col">Borrowed On</th>
+          <th scope="col">Due Date</th>
+          <th scope="col">Returned On</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in borrow_history %}
+        <tr>
+          <td>{{ record.borrower.username }}</td>
+          <td>{{ record.borrowed_on }}</td>
+          <td>{{ record.due_date }}</td>
+          <td>
+            {% if record.returned_on %}
+              {{ record.returned_on }}
+            {% else %}
+              <span class="text-warning">Not yet returned</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

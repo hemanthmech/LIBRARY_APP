@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ author.full_name }} — LibraTrack{% endblock %}
+
+{% block content %}
+<nav aria-label="Breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'books:author_list' %}">Authors</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ author.full_name }}</li>
+  </ol>
+</nav>
+
+<div class="row">
+  <div class="col-lg-8">
+    <h1 class="h2 mb-1">{{ author.full_name }}</h1>
+    {% if author.birth_year %}<p class="text-muted">Born: {{ author.birth_year }}</p>{% endif %}
+    {% if author.bio %}<p class="lead">{{ author.bio }}</p>{% endif %}
+
+    <h2 class="h4 mt-4">Books by this Author</h2>
+    {% if author.books.all %}
+    <ul class="list-group list-group-flush" aria-label="Books by {{ author.full_name }}">
+      {% for book in author.books.all %}
+      <li class="list-group-item">
+        <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+        <span class="text-muted small ms-2">({{ book.published_year }})</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">No books recorded for this author.</p>
+    {% endif %}
+  </div>
+  <div class="col-lg-4">
+    {% if user.is_authenticated %}
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5">Actions</h2>
+        <a href="{% url 'books:author_edit' author.pk %}" class="btn btn-outline-secondary w-100 mb-2">
+          <i class="bi bi-pencil me-1" aria-hidden="true"></i>Edit
+        </a>
+        <a href="{% url 'books:author_delete' author.pk %}" class="btn btn-outline-danger w-100">
+          <i class="bi bi-trash me-1" aria-hidden="true"></i>Delete
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

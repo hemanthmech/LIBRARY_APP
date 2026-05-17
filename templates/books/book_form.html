@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}{{ action }} Book — LibraTrack{% endblock %}
+
+{% block content %}
+<nav aria-label="Breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'books:book_list' %}">Books</a></li>
+    {% if book %}
+    <li class="breadcrumb-item"><a href="{{ book.get_absolute_url }}">{{ book.title }}</a></li>
+    {% endif %}
+    <li class="breadcrumb-item active" aria-current="page">{{ action }} Book</li>
+  </ol>
+</nav>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h1 class="h4 mb-0">
+          <i class="bi bi-book me-2" aria-hidden="true"></i>{{ action }} Book
+        </h1>
+      </div>
+      <div class="card-body p-4">
+        {% crispy form %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

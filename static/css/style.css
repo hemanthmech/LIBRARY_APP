@@ -1,0 +1,64 @@
+/*
+ * LibraTrack — Custom CSS
+ * Complements Bootstrap 5 with accessibility and responsive enhancements.
+ * PEP8-equivalent: consistent naming, logical grouping, descriptive comments.
+ */
+
+/* ── Skip Link (Accessibility) ──────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  background: #fff;
+  color: #000;
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 0.25rem 0.25rem;
+  font-weight: bold;
+  text-decoration: none;
+  border: 2px solid #0d6efd;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* ── Book Card Hover Effect ──────────────────────────────────────────────── */
+.book-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12) !important;
+}
+
+/* ── Focus Indicators (Accessibility) ───────────────────────────────────── */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #0d6efd;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ── Responsive Table ────────────────────────────────────────────────────── */
+@media (max-width: 576px) {
+  .table th,
+  .table td {
+    font-size: 0.85rem;
+  }
+}
+
+/* ── Badge Links ─────────────────────────────────────────────────────────── */
+a.badge:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+/* ── Navbar Active State ─────────────────────────────────────────────────── */
+.navbar-nav .nav-link.active {
+  font-weight: 600;
+}
